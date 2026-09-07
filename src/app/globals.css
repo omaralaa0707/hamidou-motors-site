@@ -1,0 +1,209 @@
+@import "tailwindcss";
+
+@theme {
+  /*
+   * Every poster Hamedo Motors publishes is the same two colours: a cool
+   * near-black service-bay floor (sampled from their own Haval garage post)
+   * and the signal red of their "HAMEDO" wordmark bar (sampled from the
+   * Proton Saga sheet, ~#D9071D). No gold anywhere in their own material,
+   * so none is introduced here either -- gold-on-black as an identity
+   * belongs to 02 regardless.
+   */
+  --color-ground: #0d1114;
+  --color-panel: #171b1f;
+  --color-panel-2: #1f2429;
+  --color-cream: #eeefec;
+  --color-muted: #8d949b;
+  --color-red: #e3212f;
+
+  --font-display: var(--font-michroma), Arial, sans-serif;
+  --font-body: var(--font-overpass), system-ui, sans-serif;
+  --font-arabic-display: var(--font-qahiri), "Segoe UI", sans-serif;
+  --font-arabic-body: var(--font-ruwudu), system-ui, sans-serif;
+
+  --text-hero: clamp(2rem, 4.6vw, 3.9rem);
+  --text-display: clamp(1.4rem, 2.8vw, 2.2rem);
+  --text-lead: clamp(1rem, 1.15vw, 1.14rem);
+}
+
+@layer base {
+  section[id] { scroll-margin-top: 5.5rem; }
+
+  html {
+    background: var(--color-ground);
+    color: var(--color-cream);
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: auto;
+    overflow-x: clip;
+  }
+
+  body { font-family: var(--font-body); overflow-x: clip; }
+  html[dir="rtl"] body { font-family: var(--font-arabic-body); }
+
+  ::selection { background: var(--color-red); color: var(--color-cream); }
+  :focus-visible { outline: 2px solid var(--color-red); outline-offset: 3px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility font-display { font-family: var(--font-display); }
+html[dir="rtl"] .font-display { font-family: var(--font-arabic-display); }
+
+@utility sign {
+  font-family: var(--font-display);
+  font-weight: 400; /* Michroma ships one weight */
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+html[dir="rtl"] .sign {
+  font-family: var(--font-arabic-display);
+  font-weight: 400; /* Qahiri ships one weight */
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+
+/* A Latin wordmark or model code stays in the Latin display face in both locales. */
+@utility signmark {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0;
+  unicode-bidi: plaintext;
+}
+
+@utility label {
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+html[dir="rtl"] .label {
+  font-family: var(--font-arabic-body);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.86rem;
+}
+
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+@utility arabic { font-family: var(--font-arabic-body); }
+
+/* ---------------------------------------------------------------------------
+ * Motion signature: THE PING.
+ *
+ * Sourced from their own "keep your eye on the map" teaser -- a dropped pin
+ * with roads radiating and lighting from it. Content here doesn't fade or
+ * slide in: a thin red ring expands outward from the block's own leading
+ * edge and dissolves, like a location ping registering, while the content
+ * itself simply steps up to full opacity underneath it.
+ *
+ * `[data-ping]` is the OUTER element an IntersectionObserver watches;
+ * `[data-ping-item]` children carry `--ping-i` and animate off it.
+ * ------------------------------------------------------------------------ */
+
+@keyframes ping-content {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ping-ring {
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-red) 55%, transparent); }
+  to { box-shadow: 0 0 0 22px color-mix(in srgb, var(--color-red) 0%, transparent); }
+}
+
+[data-ping-item] {
+  opacity: 0;
+  position: relative;
+  border-radius: 2px;
+}
+[data-ping][data-seen] [data-ping-item] {
+  animation: ping-content 360ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: calc(var(--ping-i, 0) * 80ms);
+}
+[data-ping][data-seen] [data-ping-item]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+  pointer-events: none;
+  animation: ping-ring 620ms cubic-bezier(0.2, 0.6, 0.4, 1) both;
+  animation-delay: calc(var(--ping-i, 0) * 80ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-ping-item] { opacity: 1; animation: none; }
+  [data-ping][data-seen] [data-ping-item]::after { animation: none; content: none; }
+}
+
+.hard-cut { transition: none !important; }
+
+/* ---------------------------------------------------------------------------
+ * Arabic corrections. Keyed off [dir], never [lang]; unlayered so they
+ * outrank Tailwind utilities.
+ * ------------------------------------------------------------------------ */
+
+html[dir="ltr"] .text-hero { line-height: 1.02; }
+html[dir="rtl"] .text-hero {
+  font-size: clamp(1.9rem, 3.6vw, 3rem);
+  line-height: 1.7;
+  font-weight: 400;
+}
+html[dir="ltr"] .text-display { line-height: 1.08; }
+html[dir="rtl"] .text-display {
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+html[dir="rtl"] [class*="tracking-["],
+html[dir="rtl"] .tracking-widest,
+html[dir="rtl"] .tracking-wider { letter-spacing: 0; }
+
+.fine { font-size: 0.79rem; line-height: 1.65; }
+html[dir="rtl"] .fine { font-size: 0.93rem; line-height: 1.95; }
+
+html[dir="rtl"] .text-lead { font-size: clamp(1.05rem, 1.2vw, 1.2rem); line-height: 2; }
+
+.m-hero { max-width: 18ch; }
+html[dir="rtl"] .m-hero { max-width: 22ch; }
+.m-head { max-width: 30ch; }
+html[dir="rtl"] .m-head { max-width: 34ch; }
+
+.chip {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.66rem;
+  font-weight: 400;
+  unicode-bidi: plaintext;
+}
+
+/* three.js writes an inline pixel size onto the canvas from whatever its
+   container measured when the renderer last sized itself; a later layout
+   pass leaves that size stale and the canvas overhangs its parent. */
+.network-host canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.bidi { unicode-bidi: plaintext; }
+html[dir="rtl"] .bidi { text-align: right; }
+html[dir="ltr"] .bidi { text-align: left; }
+
+.latin {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+html[dir="rtl"] .latin { text-align: right; }
