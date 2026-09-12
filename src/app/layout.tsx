@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Michroma, Overpass, Qahiri, Ruwudu } from "next/font/google";
 import "./globals.css";
 import { LocaleProvider } from "@/i18n/locale-provider";
-import { ScrollProvider } from "@/components/motion/scroll-provider";
 import { ar } from "@/content/ar";
 import { en } from "@/content/en";
 
@@ -56,7 +55,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <style>{`[data-ping-item]{opacity:1!important;transform:none!important}[data-ping-item]::after{content:none!important}`}</style>
         </noscript>
         <LocaleProvider dictionaries={{ ar, en }} defaultLocale="en">
-          <ScrollProvider />
           {children}
         </LocaleProvider>
       </body>

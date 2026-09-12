@@ -102,8 +102,7 @@ export const en: HamedoContent = {
   },
 
   footer: {
-    disclaimer: "A concept design, built as a demonstration. Not an official Hamedo Motors site and not affiliated with them. All marks, figures and quoted copy belong to Hamedo Motors or their named sources; captions are quoted as published.",
-    rights: "Concept by Claude",
+    rights: "© Hamedo Motors. All rights reserved.",
   },
 
   a11y: {
